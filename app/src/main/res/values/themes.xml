@@ -1,0 +1,15 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.SMBFinance" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="colorPrimary">#3B84F1</item>
+        <item name="colorPrimaryContainer">#3B84F1</item>
+        <item name="colorOnPrimary">@color/white</item>
+        <item name="colorSecondary">#3B84F1</item>
+        <item name="colorSecondaryContainer">#3B84F1</item>
+        <item name="colorOnSecondary">@color/white</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Theme.SMBFinance" parent="Base.Theme.SMBFinance" />
+</resources>

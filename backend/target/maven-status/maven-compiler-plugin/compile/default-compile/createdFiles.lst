@@ -1,0 +1,5 @@
+com\smbfinance\controller\LoginController.class
+com\smbfinance\controller\LoginRequest.class
+com\smbfinance\repository\UserRepository.class
+com\smbfinance\BackendApplication.class
+com\smbfinance\entity\User.class

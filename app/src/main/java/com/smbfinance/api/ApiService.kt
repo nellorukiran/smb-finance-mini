@@ -9,6 +9,8 @@ import com.smbfinance.model.PaymentHistoryResponse
 import com.smbfinance.model.PaymentUpdateRequest
 import com.smbfinance.model.CustomerListResponse
 import com.smbfinance.model.Customer
+import com.smbfinance.model.CustomerDetailsResponse
+import com.smbfinance.model.TransactionDetailsResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -29,7 +31,7 @@ interface ApiService {
     suspend fun getPaymentHistory(@Query("customerId") customerId: String): Response<PaymentHistoryResponse>
 
     @GET("api/transaction/details")
-    suspend fun getTransactionDetails(@Query("customerId") customerId: String): Response<LoginResponse>
+    suspend fun getTransactionDetails(@Query("customerId") customerId: String): Response<TransactionDetailsResponse>
 
     @POST("api/customer/payment/update")
     suspend fun updatePayment(@Body request: PaymentUpdateRequest): Response<LoginResponse>
@@ -45,4 +47,7 @@ interface ApiService {
 
     @GET("api/customer/search")
     suspend fun getCustomerById(@Query("customerId") customerId: String): Response<LoginResponse>
+
+    @GET("api/customer/details")
+    suspend fun getCustomerDetails(@Query("customerId") customerId: String): Response<CustomerDetailsResponse>
 } 

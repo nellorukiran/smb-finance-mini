@@ -3,6 +3,8 @@ package com.smbfinance
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -91,6 +93,21 @@ class DashboardActivity : AppCompatActivity() {
 
         setupDashboard()
         fetchCustomerStats()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.toolbar_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                performLogout()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     private fun performLogout() {

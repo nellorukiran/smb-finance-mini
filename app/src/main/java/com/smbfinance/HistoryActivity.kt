@@ -3,6 +3,7 @@ package com.smbfinance
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
@@ -69,6 +70,56 @@ class HistoryActivity : AppCompatActivity() {
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.action_logout -> {
+                performLogout()
+                true
+            }
+            android.R.id.home -> {
+                val intent = Intent(this, DashboardActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun performLogout() {
+        // Clear the auth token first
+        RetrofitClient.setAuthToken(null)
+        
+        // Navigate to login screen immediately
+        val intent = Intent(this@HistoryActivity, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+        
+        // Optionally make the API call in the background
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                Log.d(TAG, "Attempting logout...")
+                val response = RetrofitClient.apiService.logout()
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        Log.d(TAG, "Logout successful")
+                    } else {
+                        val errorBody = response.errorBody()?.string()
+                        Log.e(TAG, "Logout failed with code: ${response.code()}, error: $errorBody")
+                    }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error during logout", e)
+            }
+        }
+    }
+
     private fun searchPaymentHistory(customerId: String) {
         CoroutineScope(Dispatchers.IO).launch {
             try {
@@ -104,18 +155,5 @@ class HistoryActivity : AppCompatActivity() {
         rvTransactions.adapter = transactionAdapter
         tvTransactionHistoryTitle.visibility = View.VISIBLE
         rvTransactions.visibility = View.VISIBLE
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
-                finish()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
     }
 } 

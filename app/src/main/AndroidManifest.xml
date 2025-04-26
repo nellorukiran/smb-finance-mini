@@ -30,6 +30,7 @@
         </activity>
         <activity android:name=".RegisterActivity" />
         <activity android:name=".HistoryActivity" />
+        <activity android:name=".UpdateCustomerActivity" />
     </application>
 
 </manifest>

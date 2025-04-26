@@ -90,6 +90,15 @@
                     android:padding="16dp">
 
                     <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Customer Details"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/design_default_color_primary"
+                        android:layout_marginBottom="16dp"/>
+
+                    <TextView
                         android:id="@+id/tvCustomerName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -121,15 +130,15 @@
             </com.google.android.material.card.MaterialCardView>
 
             <TextView
+                android:id="@+id/tvTransactionHistoryTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Transaction History"
-                android:textSize="18sp"
+                android:textSize="20sp"
                 android:textStyle="bold"
                 android:textColor="@color/design_default_color_primary"
                 android:layout_marginTop="16dp"
-                android:visibility="gone"
-                android:id="@+id/tvTransactionHistoryTitle" />
+                android:visibility="gone" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTransactions"

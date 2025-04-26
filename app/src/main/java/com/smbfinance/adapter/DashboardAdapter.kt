@@ -1,6 +1,5 @@
 package com.smbfinance.adapter
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,11 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.smbfinance.R
-import com.smbfinance.HistoryActivity
 import com.smbfinance.model.DashboardItem
 
-class DashboardAdapter(private val items: List<DashboardItem>) : 
-    RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
+class DashboardAdapter(
+    private val items: List<DashboardItem>,
+    private val onItemClick: (DashboardItem) -> Unit
+) : RecyclerView.Adapter<DashboardAdapter.ViewHolder>() {
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val icon: ImageView = view.findViewById(R.id.icon)
@@ -34,13 +34,7 @@ class DashboardAdapter(private val items: List<DashboardItem>) :
         holder.description.text = item.description
 
         holder.cardView.setOnClickListener {
-            when (item.title) {
-                "History" -> {
-                    val intent = Intent(holder.cardView.context, HistoryActivity::class.java)
-                    holder.cardView.context.startActivity(intent)
-                }
-                // Add other cases for different dashboard items
-            }
+            onItemClick(item)
         }
     }
 

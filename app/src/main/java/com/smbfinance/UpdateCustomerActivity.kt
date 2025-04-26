@@ -13,9 +13,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
 import com.smbfinance.api.RetrofitClient
-import com.smbfinance.model.CustomerDetailsData
 import com.smbfinance.model.PaymentUpdateRequest
-import com.smbfinance.model.ErrorResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -23,7 +21,6 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
-import com.google.gson.Gson
 
 class UpdateCustomerActivity : AppCompatActivity() {
     private lateinit var etCustomerId: EditText
@@ -71,37 +68,47 @@ class UpdateCustomerActivity : AppCompatActivity() {
         etPenalty = findViewById(R.id.etPenalty)
         btnUpdate = findViewById(R.id.btnUpdate)
 
-        // Set click listener for search button
+        // Setup date picker
+        etPaidDate.setOnClickListener {
+            showDatePicker()
+        }
+
+        // Setup search button
         btnSearch.setOnClickListener {
             val customerId = etCustomerId.text.toString().trim()
             if (customerId.isEmpty()) {
-                Toast.makeText(this, "Please enter customer ID", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Please enter Customer ID", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             searchCustomer(customerId)
         }
 
-        // Set click listener for paid date field
-        etPaidDate.setOnClickListener {
-            showDatePicker()
-        }
-
-        // Set click listener for update button
+        // Setup update button
         btnUpdate.setOnClickListener {
             updatePayment()
         }
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            android.R.id.home -> {
-                val intent = Intent(this, DashboardActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-                startActivity(intent)
-                finish()
-                true
+    private fun searchCustomer(customerId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val response = RetrofitClient.apiService.getCustomerById(customerId)
+                withContext(Dispatchers.Main) {
+                    if (response.isSuccessful) {
+                        detailsLayout.visibility = View.VISIBLE
+                        // Set current date as paid date
+                        etPaidDate.setText(dateFormat.format(Calendar.getInstance().time))
+                    } else {
+                        Toast.makeText(this@UpdateCustomerActivity, "Customer not found", Toast.LENGTH_SHORT).show()
+                        detailsLayout.visibility = View.GONE
+                    }
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@UpdateCustomerActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
+                    detailsLayout.visibility = View.GONE
+                }
             }
-            else -> super.onOptionsItemSelected(item)
         }
     }
 
@@ -119,81 +126,21 @@ class UpdateCustomerActivity : AppCompatActivity() {
         datePickerDialog.show()
     }
 
-    private fun searchCustomer(customerId: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                val cleanCustomerId = customerId.replace(Regex("[^0-9]"), "")
-                val response = RetrofitClient.apiService.getTransactionDetails(cleanCustomerId)
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful && response.body()?.data != null) {
-                        displayCustomerDetails(response.body()!!.data!!)
-                    } else {
-                        Toast.makeText(this@UpdateCustomerActivity, "Customer not found", Toast.LENGTH_SHORT).show()
-                        detailsLayout.visibility = View.GONE
-                    }
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@UpdateCustomerActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                    detailsLayout.visibility = View.GONE
-                }
-            }
-        }
-    }
-
-    private fun displayCustomerDetails(customer: CustomerDetailsData) {
-        detailsLayout.visibility = View.VISIBLE
-        tvCustomerName.text = customer.customerName
-        tvPhoneNumber.text = customer.phoneNumber
-        tvAddress.text = customer.address
-        tvProductName.text = customer.productName
-        tvTotalDues.text = customer.totalDues.toString()
-        tvPerMonthDue.text = "₹${customer.perMonthDue}"
-        tvTotalDueAmount.text = "₹${customer.totalDueAmount}"
-        tvNextDueAmount.text = "₹${customer.nextDueAmount}"
-        
-        // Set current date as paid date
-        etPaidDate.setText(dateFormat.format(Calendar.getInstance().time))
-        // Set penalty from customer data
-        etPenalty.setText(customer.penalty.toString())
-    }
-
     private fun updatePayment() {
         val customerId = etCustomerId.text.toString().trim()
         val paidAmount = etPaidAmount.text.toString().trim()
         val paidDate = etPaidDate.text.toString().trim()
         val penalty = etPenalty.text.toString().trim()
 
-        if (customerId.isEmpty()) {
-            Toast.makeText(this, "Please search for a customer first", Toast.LENGTH_SHORT).show()
+        if (customerId.isEmpty() || paidAmount.isEmpty() || paidDate.isEmpty() || penalty.isEmpty()) {
+            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()
             return
         }
-
-        if (paidAmount.isEmpty()) {
-            etPaidAmount.error = "Please enter paid amount"
-            return
-        }
-
-        if (paidDate.isEmpty()) {
-            etPaidDate.error = "Please select paid date"
-            return
-        }
-
-        if (penalty.isEmpty()) {
-            etPenalty.error = "Please enter penalty amount"
-            return
-        }
-
-        // Convert date format from dd-MM-yyyy to yyyy-MM-dd
-        val inputFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
-        val outputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-        val date = inputFormat.parse(paidDate)
-        val formattedDate = outputFormat.format(date!!)
 
         val request = PaymentUpdateRequest(
             customerId = customerId,
             paidAmount = paidAmount.toDouble(),
-            paidDate = formattedDate,
+            paidDate = paidDate,
             penalty = penalty.toDouble()
         )
 
@@ -203,20 +150,9 @@ class UpdateCustomerActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         Toast.makeText(this@UpdateCustomerActivity, "Payment updated successfully", Toast.LENGTH_SHORT).show()
-                        // Clear the form
-                        etPaidAmount.text?.clear()
-                        etPaidDate.text?.clear()
-                        etPenalty.text?.clear()
-                        detailsLayout.visibility = View.GONE
+                        finish()
                     } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMessage = try {
-                            val errorResponse = Gson().fromJson(errorBody, ErrorResponse::class.java)
-                            errorResponse.message
-                        } catch (e: Exception) {
-                            "Failed to update payment. Please try again."
-                        }
-                        Toast.makeText(this@UpdateCustomerActivity, errorMessage, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this@UpdateCustomerActivity, "Failed to update payment", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
@@ -224,6 +160,19 @@ class UpdateCustomerActivity : AppCompatActivity() {
                     Toast.makeText(this@UpdateCustomerActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
+        }
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            android.R.id.home -> {
+                val intent = Intent(this, DashboardActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                startActivity(intent)
+                finish()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 } 

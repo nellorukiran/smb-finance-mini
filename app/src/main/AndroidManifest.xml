@@ -31,6 +31,8 @@
         <activity android:name=".RegisterActivity" />
         <activity android:name=".HistoryActivity" />
         <activity android:name=".UpdateCustomerActivity" />
+        <activity android:name=".CustomerSearchActivity" />
+        <activity android:name=".CustomerDetailsActivity" />
     </application>
 
 </manifest>

@@ -76,7 +76,7 @@ class DashboardActivity : AppCompatActivity() {
                     startActivity(Intent(this, HistoryActivity::class.java))
                 }
                 R.id.nav_view -> {
-                    startActivity(Intent(this, ViewCustomersActivity::class.java))
+                    startActivity(Intent(this, CustomerSearchActivity::class.java))
                 }
                 R.id.nav_settings -> {
                     // TODO: Implement settings activity
@@ -159,7 +159,7 @@ class DashboardActivity : AppCompatActivity() {
                 "Add" -> startActivity(Intent(this, AddCustomerActivity::class.java))
                 "Update" -> startActivity(Intent(this, UpdateCustomerActivity::class.java))
                 "History" -> startActivity(Intent(this, HistoryActivity::class.java))
-                "View" -> startActivity(Intent(this, ViewCustomersActivity::class.java))
+                "View" -> startActivity(Intent(this, CustomerSearchActivity::class.java))
             }
         }
 

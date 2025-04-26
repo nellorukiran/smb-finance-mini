@@ -1,6 +1,5 @@
 package com.smbfinance.api
 
-import com.smbfinance.model.CustomerDetailsResponse
 import com.smbfinance.model.CustomerStatsResponse
 import com.smbfinance.model.LoginRequest
 import com.smbfinance.model.LoginResponse
@@ -15,8 +14,6 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 interface ApiService {
     @POST("api/login")
@@ -32,7 +29,7 @@ interface ApiService {
     suspend fun getPaymentHistory(@Query("customerId") customerId: String): Response<PaymentHistoryResponse>
 
     @GET("api/transaction/details")
-    suspend fun getTransactionDetails(@Query("customerId") customerId: String): Response<CustomerDetailsResponse>
+    suspend fun getTransactionDetails(@Query("customerId") customerId: String): Response<LoginResponse>
 
     @POST("api/customer/payment/update")
     suspend fun updatePayment(@Body request: PaymentUpdateRequest): Response<LoginResponse>
@@ -45,4 +42,7 @@ interface ApiService {
 
     @GET("api/customers")
     suspend fun getCustomers(): Response<CustomerListResponse>
+
+    @GET("api/customer/search")
+    suspend fun getCustomerById(@Query("customerId") customerId: String): Response<LoginResponse>
 } 

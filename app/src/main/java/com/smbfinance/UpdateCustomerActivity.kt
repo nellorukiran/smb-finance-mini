@@ -123,7 +123,7 @@ class UpdateCustomerActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val cleanCustomerId = customerId.replace(Regex("[^0-9]"), "")
-                val response = RetrofitClient.apiService.getCustomerDetails(cleanCustomerId)
+                val response = RetrofitClient.apiService.getTransactionDetails(cleanCustomerId)
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful && response.body()?.data != null) {
                         displayCustomerDetails(response.body()!!.data!!)

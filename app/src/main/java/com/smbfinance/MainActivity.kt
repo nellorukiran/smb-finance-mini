@@ -1,6 +1,7 @@
 package com.smbfinance
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
@@ -31,6 +32,7 @@ import java.net.UnknownHostException
 class MainActivity : AppCompatActivity() {
     private val TAG = "MainActivity"
     private val gson = Gson()
+    private lateinit var sharedPreferences: SharedPreferences
     lateinit var usernameInput: EditText
     lateinit var passwordInput: EditText
     lateinit var loginBtn: Button
@@ -40,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        
+        sharedPreferences = getSharedPreferences("SMBFinance", MODE_PRIVATE)
         usernameInput = findViewById(R.id.username_input)
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
@@ -98,41 +102,38 @@ class MainActivity : AppCompatActivity() {
 
                 withContext(Dispatchers.Main) {
                     hideLoading()
-                    if (response.isSuccessful) {
-                        if (responseBody != null) {
-                            Log.d(TAG, "Login Response Status: ${responseBody.status}")
-                            Log.d(TAG, "Login Response Message: ${responseBody.message}")
-                            
-                            if (responseBody.status == "success") {
-                                // Store the auth token
-                                RetrofitClient.setAuthToken(responseBody.data?.token)
-                                Log.d(TAG, "Auth token stored: ${responseBody.data?.token?.take(10)}...")
-                                
-                                // Clear input fields
-                                usernameInput.text.clear()
-                                passwordInput.text.clear()
-                                
-                                try {
-                                    // Navigate to dashboard without user data
-                                    val intent = Intent(this@MainActivity, DashboardActivity::class.java)
-                                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                                    Log.d(TAG, "Starting DashboardActivity")
-                                    startActivity(intent)
-                                    Log.d(TAG, "DashboardActivity started successfully")
-                                    finish() // Close the login activity
-                                } catch (e: Exception) {
-                                    Log.e(TAG, "Error navigating to DashboardActivity", e)
-                                    Log.e(TAG, "Error stack trace: ${e.stackTraceToString()}")
-                                    Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
-                                }
-                            } else {
-                                val errorMessage = responseBody.message ?: "Invalid response format"
-                                Log.e(TAG, "Login failed: $errorMessage")
-                                Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_LONG).show()
+                    if (response.isSuccessful && responseBody != null) {
+                        Log.d(TAG, "Login response: ${gson.toJson(responseBody)}")
+                        
+                        if (responseBody.status == "success") {
+                            // Store the auth token from the response header
+                            val authToken = response.headers()["Authorization"]
+                            if (authToken != null) {
+                                RetrofitClient.setAuthToken(authToken)
+                                Log.d(TAG, "Auth token stored: $authToken")
                             }
+                            
+                            // Store user details
+                            with(sharedPreferences.edit()) {
+                                putString("user_fullName", "${responseBody.firstname} ${responseBody.lastname}")
+                                putString("user_email", responseBody.email)
+                                putString("user_role", responseBody.role)
+                                apply()
+                            }
+                            Log.d(TAG, "Stored user details - Name: ${responseBody.firstname} ${responseBody.lastname}, Email: ${responseBody.email}, Role: ${responseBody.role}")
+                            
+                            // Clear input fields
+                            usernameInput.text.clear()
+                            passwordInput.text.clear()
+                            
+                            // Navigate to dashboard
+                            val intent = Intent(this@MainActivity, DashboardActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                            startActivity(intent)
+                            finish()
                         } else {
-                            Log.e(TAG, "Login response body is null")
-                            Toast.makeText(this@MainActivity, "Login failed: Invalid response", Toast.LENGTH_LONG).show()
+                            val errorMessage = responseBody.message ?: "Invalid response format"
+                            Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_LONG).show()
                         }
                     } else {
                         val errorMessage = try {
@@ -146,22 +147,17 @@ class MainActivity : AppCompatActivity() {
                                 else -> "Login failed: Unknown error"
                             }
                         }
-                        
-                        Log.e(TAG, "Login failed with status: ${response.code()}")
-                        Log.e(TAG, "Error details: $errorMessage")
                         Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_LONG).show()
                     }
                 }
             } catch (e: UnknownHostException) {
                 withContext(Dispatchers.Main) {
                     hideLoading()
-                    Log.e(TAG, "Network error: Cannot connect to server", e)
                     Toast.makeText(this@MainActivity, "Cannot connect to server. Please check your internet connection.", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     hideLoading()
-                    Log.e(TAG, "Unexpected error during login", e)
                     Toast.makeText(this@MainActivity, "An unexpected error occurred. Please try again.", Toast.LENGTH_LONG).show()
                 }
             }

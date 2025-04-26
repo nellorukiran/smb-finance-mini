@@ -3,14 +3,13 @@ package com.smbfinance.model
 import com.google.gson.annotations.SerializedName
 
 data class LoginResponse(
-    @SerializedName("message")
-    val message: String,
-    
-    @SerializedName("status")
+    val firstname: String,
+    val lastname: String,
+    val email: String,
+    val username: String,
+    val role: String,
     val status: String,
-    
-    @SerializedName("data")
-    val data: LoginData? = null
+    val message: String
 )
 
 data class LoginData(
@@ -31,8 +30,14 @@ data class UserData(
     @SerializedName("email")
     val email: String,
     
-    @SerializedName("fullName")
-    val fullName: String,
+    @SerializedName("role")
+    val role: String,
+
+    @SerializedName("firstname")
+    val firstname: String,
+
+    @SerializedName("lastname")
+    val lastname: String,
     
     @SerializedName("userType")
     val userType: String

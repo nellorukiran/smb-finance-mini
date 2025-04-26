@@ -1,6 +1,7 @@
 package com.smbfinance
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -34,10 +35,14 @@ class DashboardActivity : AppCompatActivity() {
     private lateinit var tvActiveCustomers: TextView
     private lateinit var tvHomeApplianceCustomers: TextView
     private lateinit var tvLoanCustomers: TextView
+    private lateinit var sharedPreferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
+
+        sharedPreferences = getSharedPreferences("SMBFinance", MODE_PRIVATE)
+        Log.d(TAG, "Retrieved user details: ${sharedPreferences.getString("user_fullName", "")}")
 
         // Initialize views
         drawerLayout = findViewById(R.id.drawer_layout)
@@ -48,8 +53,10 @@ class DashboardActivity : AppCompatActivity() {
         tvHomeApplianceCustomers = findViewById(R.id.tvHomeApplianceCustomers)
         tvLoanCustomers = findViewById(R.id.tvLoanCustomers)
 
-        // Set welcome message
-        tvWelcome.text = "Welcome to SMB Finance!"
+        // Set welcome message with user's name
+        val userName = sharedPreferences.getString("user_fullName", "User")
+        Log.d(TAG, "Setting welcome message for user: $userName")
+        tvWelcome.text = "Welcome, $userName!"
 
         // Setup toolbar
         setSupportActionBar(toolbar)
@@ -61,6 +68,20 @@ class DashboardActivity : AppCompatActivity() {
         )
         drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
+
+        // Update navigation header with user details
+        val headerView = navigationView.getHeaderView(0)
+        val profileName = headerView.findViewById<TextView>(R.id.profile_name)
+        val profileEmail = headerView.findViewById<TextView>(R.id.profile_email)
+
+        val storedName = sharedPreferences.getString("user_fullName", "User")
+        val storedEmail = sharedPreferences.getString("user_email", "")
+        val storedRole = sharedPreferences.getString("user_role", "")
+
+        Log.d(TAG, "Displaying user details - Name: $storedName, Email: $storedEmail, Role: $storedRole")
+
+        profileName.text = storedName
+        profileEmail.text = storedEmail
 
         // Setup navigation view
         navigationView.setNavigationItemSelectedListener { item ->
@@ -111,8 +132,12 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun performLogout() {
-        // Clear auth token
+        // Clear auth token and user details
         RetrofitClient.setAuthToken(null)
+        with(sharedPreferences.edit()) {
+            clear()
+            apply()
+        }
         
         // Navigate to login screen
         val intent = Intent(this, MainActivity::class.java)

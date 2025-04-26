@@ -114,25 +114,28 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
-                                    android:padding="16dp">
+                                    android:padding="16dp"
+                                    android:gravity="center">
 
                                     <TextView
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Active"
-                                        android:textSize="16sp"
+                                        android:textSize="14sp"
                                         android:textColor="@color/design_default_color_primary"
+                                        android:fontFamily="sans-serif-medium"
                                         android:gravity="center" />
 
                                     <TextView
                                         android:id="@+id/tvActiveCustomers"
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:text="0"
-                                        android:textSize="24sp"
+                                        android:textSize="28sp"
                                         android:textStyle="bold"
                                         android:textColor="@color/design_default_color_primary"
+                                        android:fontFamily="sans-serif"
                                         android:gravity="center" />
 
                                 </LinearLayout>
@@ -152,26 +155,29 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
-                                    android:padding="16dp">
+                                    android:padding="16dp"
+                                    android:gravity="center">
 
                                     <TextView
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Appliances"
                                         android:textSize="14sp"
                                         android:textColor="@color/design_default_color_primary"
+                                        android:fontFamily="sans-serif-medium"
                                         android:gravity="center"
                                         android:maxLines="1" />
 
                                     <TextView
                                         android:id="@+id/tvHomeApplianceCustomers"
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:text="0"
-                                        android:textSize="24sp"
+                                        android:textSize="28sp"
                                         android:textStyle="bold"
                                         android:textColor="@color/design_default_color_primary"
+                                        android:fontFamily="sans-serif"
                                         android:gravity="center" />
 
                                 </LinearLayout>
@@ -191,25 +197,28 @@
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
                                     android:orientation="vertical"
-                                    android:padding="16dp">
+                                    android:padding="16dp"
+                                    android:gravity="center">
 
                                     <TextView
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:text="Loan"
-                                        android:textSize="16sp"
+                                        android:textSize="14sp"
                                         android:textColor="@color/design_default_color_primary"
+                                        android:fontFamily="sans-serif-medium"
                                         android:gravity="center" />
 
                                     <TextView
                                         android:id="@+id/tvLoanCustomers"
-                                        android:layout_width="match_parent"
+                                        android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:layout_marginTop="8dp"
                                         android:text="0"
-                                        android:textSize="24sp"
+                                        android:textSize="28sp"
                                         android:textStyle="bold"
                                         android:textColor="@color/design_default_color_primary"
+                                        android:fontFamily="sans-serif"
                                         android:gravity="center" />
 
                                 </LinearLayout>

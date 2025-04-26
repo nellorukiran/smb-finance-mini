@@ -12,8 +12,8 @@ import java.util.concurrent.TimeUnit
 object RetrofitClient {
     private const val TAG = "RetrofitClient"
     // Use localhost for API calls
-    private const val BASE_URL = "http://10.0.2.2:5000/"
-    // private const val BASE_URL = "http://smbfinance.us-east-1.elasticbeanstalk.com/"
+    private const val //BASE_URL = "http://10.0.2.2:5000/"
+    //private const val BASE_URL = "http://smbfinance.us-east-1.elasticbeanstalk.com/"
 
     private var authToken: String? = null
 
@@ -35,6 +35,7 @@ object RetrofitClient {
         val request = requestBuilder.build()
         chain.proceed(request)
     }
+
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY

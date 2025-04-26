@@ -6,9 +6,9 @@
             android:icon="@drawable/icon_account_circle"
             android:title="Dashboard" />
         <item
-            android:id="@+id/nav_add"
+            android:id="@+id/nav_delete"
             android:icon="@drawable/icon_account_circle"
-            android:title="Add Customer" />
+            android:title="Delete Customer" />
         <item
             android:id="@+id/nav_update"
             android:icon="@drawable/icon_account_circle"

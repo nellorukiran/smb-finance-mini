@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.navigation.NavigationView
 import com.smbfinance.adapter.DashboardAdapter
 import com.smbfinance.api.RetrofitClient
-import com.smbfinance.model.CustomerStatsData
+import com.smbfinance.model.CustomerStatsResponse
 import com.smbfinance.model.DashboardItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,8 +68,8 @@ class DashboardActivity : AppCompatActivity() {
                 R.id.nav_dashboard -> {
                     // Already on dashboard, do nothing
                 }
-                R.id.nav_add -> {
-                    startActivity(Intent(this, AddCustomerActivity::class.java))
+                R.id.nav_delete -> {
+                    startActivity(Intent(this, DeleteCustomerActivity::class.java))
                 }
                 R.id.nav_update -> {
                     startActivity(Intent(this, UpdateCustomerActivity::class.java))
@@ -111,39 +111,21 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun performLogout() {
-        // Clear the auth token first
+        // Clear auth token
         RetrofitClient.setAuthToken(null)
         
-        // Navigate to login screen immediately
-        val intent = Intent(this@DashboardActivity, MainActivity::class.java)
+        // Navigate to login screen
+        val intent = Intent(this, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
-        
-        // Optionally make the API call in the background
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                Log.d(TAG, "Attempting logout...")
-                val response = RetrofitClient.apiService.logout()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        Log.d(TAG, "Logout successful")
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        Log.e(TAG, "Logout failed with code: ${response.code()}, error: $errorBody")
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error during logout", e)
-            }
-        }
     }
 
     private fun setupDashboard() {
         val items = listOf(
             DashboardItem(
-                "Add",
-                "Add new customers, manage customer details, and view customer history",
+                "Delete",
+                "Delete customer records and manage customer data",
                 R.drawable.icon_account_circle
             ),
             DashboardItem(
@@ -165,7 +147,7 @@ class DashboardActivity : AppCompatActivity() {
 
         adapter = DashboardAdapter(items) { item ->
             when (item.title) {
-                "Add" -> startActivity(Intent(this, AddCustomerActivity::class.java))
+                "Delete" -> startActivity(Intent(this, DeleteCustomerActivity::class.java))
                 "Update" -> startActivity(Intent(this, UpdateCustomerActivity::class.java))
                 "History" -> startActivity(Intent(this, HistoryActivity::class.java))
                 "View" -> startActivity(Intent(this, CustomerSearchActivity::class.java))
@@ -182,26 +164,24 @@ class DashboardActivity : AppCompatActivity() {
             try {
                 val response = RetrofitClient.apiService.getCustomerStats()
                 withContext(Dispatchers.Main) {
-                    if (response.isSuccessful && response.body() != null) {
-                        val stats = response.body()!!.data
-                        updateStatsUI(stats)
+                    if (response.isSuccessful) {
+                        val stats = response.body()
+                        if (stats != null) {
+                            updateStatsUI(stats)
+                        }
                     } else {
                         Log.e(TAG, "Failed to fetch customer stats: ${response.code()}")
-                        Toast.makeText(this@DashboardActivity, "Failed to load customer stats", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 Log.e(TAG, "Error fetching customer stats", e)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(this@DashboardActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
-                }
             }
         }
     }
 
-    private fun updateStatsUI(stats: CustomerStatsData) {
-        tvActiveCustomers.text = stats.activeCustomers.toString()
-        tvHomeApplianceCustomers.text = stats.homeApplianceCustomers.toString()
-        tvLoanCustomers.text = stats.loanCustomers.toString()
+    private fun updateStatsUI(stats: CustomerStatsResponse) {
+        tvActiveCustomers.text = stats.data.activeCustomers.toString()
+        tvHomeApplianceCustomers.text = stats.data.homeApplianceCustomers.toString()
+        tvLoanCustomers.text = stats.data.loanCustomers.toString()
     }
 } 

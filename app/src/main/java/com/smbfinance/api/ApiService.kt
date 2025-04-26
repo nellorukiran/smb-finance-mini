@@ -11,6 +11,7 @@ import com.smbfinance.model.CustomerListResponse
 import com.smbfinance.model.Customer
 import com.smbfinance.model.CustomerDetailsResponse
 import com.smbfinance.model.TransactionDetailsResponse
+import com.smbfinance.model.DeleteSearchResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -50,4 +51,10 @@ interface ApiService {
 
     @GET("api/customer/details")
     suspend fun getCustomerDetails(@Query("customerId") customerId: String): Response<CustomerDetailsResponse>
+
+    @GET("api/customer/delete/search")
+    suspend fun deleteSearchCustomer(@Query("customerId") customerId: String): Response<DeleteSearchResponse>
+
+    @POST("api/customer/delete")
+    suspend fun deleteCustomer(@Query("customerId") customerId: String): Response<LoginResponse>
 } 

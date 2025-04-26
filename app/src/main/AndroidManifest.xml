@@ -33,6 +33,7 @@
         <activity android:name=".UpdateCustomerActivity" />
         <activity android:name=".CustomerSearchActivity" />
         <activity android:name=".CustomerDetailsActivity" />
+        <activity android:name=".DeleteCustomerActivity" />
     </application>
 
 </manifest>

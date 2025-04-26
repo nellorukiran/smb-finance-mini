@@ -31,8 +31,8 @@ interface ApiService {
     @GET("api/customer/payment-details/search")
     suspend fun getPaymentHistory(@Query("customerId") customerId: String): Response<PaymentHistoryResponse>
 
-    @GET("api/customer/details")
-    suspend fun getCustomerDetails(@Query("customerId") customerId: String): Response<CustomerDetailsResponse>
+    @GET("api/transaction/details")
+    suspend fun getTransactionDetails(@Query("customerId") customerId: String): Response<CustomerDetailsResponse>
 
     @POST("api/customer/payment/update")
     suspend fun updatePayment(@Body request: PaymentUpdateRequest): Response<LoginResponse>

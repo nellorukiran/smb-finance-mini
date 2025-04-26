@@ -19,6 +19,8 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 class CustomerSearchActivity : AppCompatActivity() {
     private val TAG = "CustomerSearchActivity"
@@ -31,17 +33,17 @@ class CustomerSearchActivity : AppCompatActivity() {
     private lateinit var tvShopName: TextView
     private lateinit var tvProductName: TextView
     private lateinit var tvProductModel: TextView
-    private lateinit var tvPurchaseDateStr: TextView
+    private lateinit var tvPurchaseDate: TextView
+    private lateinit var tvTotalDues: TextView
+    private lateinit var tvPerMonthDue: TextView
+    private lateinit var tvTotalDueAmount: TextView
+    private lateinit var tvInterestAmount: TextView
     private lateinit var tvActualPrice: TextView
     private lateinit var tvSalePrice: TextView
-    private lateinit var tvTotalDues: TextView
     private lateinit var tvAdvance: TextView
     private lateinit var tvPenalty: TextView
     private lateinit var tvDueTime: TextView
     private lateinit var tvDueAmount: TextView
-    private lateinit var tvInterestAmount: TextView
-    private lateinit var tvTotalDueAmount: TextView
-    private lateinit var tvPerMonthDue: TextView
     private lateinit var tvProfit: TextView
     private lateinit var tvDocCharges: TextView
     private lateinit var tvTotalProfit: TextView
@@ -50,6 +52,8 @@ class CustomerSearchActivity : AppCompatActivity() {
     private lateinit var tvCreateDate: TextView
     private lateinit var tvCreatedBy: TextView
 
+    private val displayDateFormat = SimpleDateFormat("dd-MM-yyyy", Locale.getDefault())
+    private val apiDateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -65,22 +69,22 @@ class CustomerSearchActivity : AppCompatActivity() {
         btnSearch = findViewById(R.id.btnSearch)
         detailsCard = findViewById(R.id.detailsCard)
         tvCustomerName = findViewById(R.id.tvCustomerName)
-        tvPurchaseDateStr = findViewById(R.id.tvPurchaseDateStr)
         tvPhoneNumber = findViewById(R.id.tvPhoneNumber)
         tvAddress = findViewById(R.id.tvAddress)
-        tvProductName = findViewById(R.id.tvProductName)
-        tvTotalDues = findViewById(R.id.tvTotalDues)
-        tvPerMonthDue = findViewById(R.id.tvPerMonthDue)
-        tvTotalDueAmount = findViewById(R.id.tvTotalDueAmount)
-        tvInterestAmount = findViewById(R.id.tvInterestAmount)
         tvShopName = findViewById(R.id.tvShopName)
+        tvProductName = findViewById(R.id.tvProductName)
         tvProductModel = findViewById(R.id.tvProductModel)
+        tvPurchaseDate = findViewById(R.id.tvPurchaseDate)
         tvActualPrice = findViewById(R.id.tvActualPrice)
         tvSalePrice = findViewById(R.id.tvSalePrice)
         tvAdvance = findViewById(R.id.tvAdvance)
         tvPenalty = findViewById(R.id.tvPenalty)
         tvDueTime = findViewById(R.id.tvDueTime)
         tvDueAmount = findViewById(R.id.tvDueAmount)
+        tvInterestAmount = findViewById(R.id.tvInterestAmount)
+        tvTotalDueAmount = findViewById(R.id.tvTotalDueAmount)
+        tvTotalDues = findViewById(R.id.tvTotalDues)
+        tvPerMonthDue = findViewById(R.id.tvPerMonthDue)
         tvProfit = findViewById(R.id.tvProfit)
         tvDocCharges = findViewById(R.id.tvDocCharges)
         tvTotalProfit = findViewById(R.id.tvTotalProfit)
@@ -146,8 +150,17 @@ class CustomerSearchActivity : AppCompatActivity() {
         tvPhoneNumber.text = "Phone: ${details.phoneNumber}"
         tvAddress.text = "Address: ${details.address}"
         tvShopName.text = "Shop Name: ${details.shopName}"
-        tvProductName.text = "Product Name & Model: ${details.productName} (${details.productModel})"
-        tvPurchaseDateStr.text = "Date Of Purchase: ${details.purchaseDateStr}"
+        tvProductName.text = "Product Name: ${details.productName}"
+        tvProductModel.text = "Product Model: ${details.productModel}"
+        
+        // Format and display purchase date
+        try {
+            val purchaseDate = apiDateFormat.parse(details.purchaseDate)
+            tvPurchaseDate.text = "Purchase Date: ${displayDateFormat.format(purchaseDate)}"
+        } catch (e: Exception) {
+            tvPurchaseDate.text = "Purchase Date: ${details.purchaseDate}"
+        }
+        
         tvActualPrice.text = "Actual Price: ${details.actualPrice}"
         tvSalePrice.text = "Saled Price: ${details.salePrice}"
         tvAdvance.text = "Advance: ${details.advance}"
@@ -155,8 +168,8 @@ class CustomerSearchActivity : AppCompatActivity() {
         tvDueAmount.text = "Due Amount: ${details.dueAmount}"
         tvDueTime.text = "Due Time: ${details.dueTime}"
         tvInterestAmount.text = "Interest Amount: ₹${details.interestAmount}"
-        tvTotalDueAmount.text = "Due Amount: ₹${details.totalDueAmount}"
-        tvTotalDues.text = "No Of Dues: ${details.totalDues}"
+        tvTotalDueAmount.text = "Total Due Amount: ₹${details.totalDueAmount}"
+        tvTotalDues.text = "Total Dues: ${details.totalDues}"
         tvPerMonthDue.text = "Monthly Due: ₹${details.perMonthDue}"
         tvProfit.text = "Profit: ${details.profit}"
         tvDocCharges.text = "Document Charges: ${details.docCharges}"

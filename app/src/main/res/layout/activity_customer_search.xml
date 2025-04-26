@@ -89,12 +89,6 @@
                     android:padding="16dp">
 
                     <TextView
-                        android:id="@+id/tvCustomerId"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-                    <TextView
                         android:id="@+id/tvCustomerName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -114,26 +108,30 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp" />
-                    <TextView
-                        android:id="@+id/tvPurchaseDateStr"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textSize="14sp" />
+
                     <TextView
                         android:id="@+id/tvShopName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp" />
+
                     <TextView
                         android:id="@+id/tvProductName"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp" />
+
                     <TextView
                         android:id="@+id/tvProductModel"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="14sp" />
+
+                    <TextView
+                        android:id="@+id/tvPurchaseDate"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -146,12 +144,6 @@
                         android:textSize="14sp" />
                     <TextView
                         android:id="@+id/tvSalePrice"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
-                        android:textSize="14sp" />
-                    <TextView
-                        android:id="@+id/tvTotalDues"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
@@ -185,13 +177,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
                     <TextView
                         android:id="@+id/tvTotalDueAmount"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textSize="14sp"/>
+                        android:textSize="14sp" />
+                    <TextView
+                        android:id="@+id/tvTotalDues"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:textSize="14sp" />
+
                     <TextView
                         android:id="@+id/tvPerMonthDue"
                         android:layout_width="match_parent"
@@ -204,18 +203,20 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp" />
+
                     <TextView
                         android:id="@+id/tvDocCharges"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp" />
+
                     <TextView
                         android:id="@+id/tvTotalProfit"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
-                        android:textSize="14sp" />
+                        android:textSize="14sp"/>
                     <TextView
                         android:id="@+id/tvCustStatus"
                         android:layout_width="match_parent"
@@ -240,7 +241,6 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:textSize="14sp" />
-
 
                 </LinearLayout>
             </androidx.cardview.widget.CardView>

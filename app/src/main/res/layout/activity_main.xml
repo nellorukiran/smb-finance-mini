@@ -53,15 +53,17 @@
             android:id="@+id/password_input"/>
 
         <Button
+            android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="32dp"
-            android:padding="16dp"
+            android:layout_marginTop="24dp"
+            android:background="@drawable/button_background"
             android:text="Login"
-            android:backgroundTint="#3B84F1"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:id="@+id/login_btn"/>
+            android:padding="16dp"
+            android:letterSpacing="0.1"
+            android:elevation="4dp" />
 
         <TextView
             android:layout_width="wrap_content"

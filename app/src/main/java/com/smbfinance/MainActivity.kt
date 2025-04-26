@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var sharedPreferences: SharedPreferences
     lateinit var usernameInput: EditText
     lateinit var passwordInput: EditText
-    lateinit var loginBtn: Button
+    lateinit var loginButton: Button
     lateinit var registerLink: TextView
     lateinit var progressBar: ProgressBar
 
@@ -46,23 +46,24 @@ class MainActivity : AppCompatActivity() {
         sharedPreferences = getSharedPreferences("SMBFinance", MODE_PRIVATE)
         usernameInput = findViewById(R.id.username_input)
         passwordInput = findViewById(R.id.password_input)
-        loginBtn = findViewById(R.id.login_btn)
+        loginButton = findViewById(R.id.btnLogin)
         registerLink = findViewById(R.id.register_link)
         progressBar = findViewById(R.id.progressBar)
         
-        loginBtn.setOnClickListener {
+        loginButton.setOnClickListener {
             val username = usernameInput.text.toString()
             val password = passwordInput.text.toString()
             
-            if (username.isNotEmpty() && password.isNotEmpty()) {
-                if (isNetworkAvailable()) {
-                    showLoading()
-                    performLogin(username, password)
-                } else {
-                    Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
-                }
-            } else {
+            if (username.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter both username and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            
+            if (isNetworkAvailable()) {
+                showLoading()
+                performLogin(username, password)
+            } else {
+                Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
             }
         }
 
@@ -74,14 +75,14 @@ class MainActivity : AppCompatActivity() {
 
     private fun showLoading() {
         progressBar.visibility = ProgressBar.VISIBLE
-        loginBtn.isEnabled = false
+        loginButton.isEnabled = false
         usernameInput.isEnabled = false
         passwordInput.isEnabled = false
     }
 
     private fun hideLoading() {
         progressBar.visibility = ProgressBar.GONE
-        loginBtn.isEnabled = true
+        loginButton.isEnabled = true
         usernameInput.isEnabled = true
         passwordInput.isEnabled = true
     }

@@ -259,6 +259,8 @@
         android:layout_height="match_parent"
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
+        android:background="@color/white"
+        style="@style/Widget.App.NavigationView"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/drawer_menu"/>
 

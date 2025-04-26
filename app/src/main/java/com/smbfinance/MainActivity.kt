@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var passwordInput: EditText
     lateinit var loginBtn: Button
     lateinit var registerLink: TextView
+    lateinit var progressBar: ProgressBar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         passwordInput = findViewById(R.id.password_input)
         loginBtn = findViewById(R.id.login_btn)
         registerLink = findViewById(R.id.register_link)
+        progressBar = findViewById(R.id.progressBar)
         
         loginBtn.setOnClickListener {
             val username = usernameInput.text.toString()
@@ -49,6 +52,7 @@ class MainActivity : AppCompatActivity() {
             
             if (username.isNotEmpty() && password.isNotEmpty()) {
                 if (isNetworkAvailable()) {
+                    showLoading()
                     performLogin(username, password)
                 } else {
                     Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show()
@@ -64,6 +68,20 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun showLoading() {
+        progressBar.visibility = ProgressBar.VISIBLE
+        loginBtn.isEnabled = false
+        usernameInput.isEnabled = false
+        passwordInput.isEnabled = false
+    }
+
+    private fun hideLoading() {
+        progressBar.visibility = ProgressBar.GONE
+        loginBtn.isEnabled = true
+        usernameInput.isEnabled = true
+        passwordInput.isEnabled = true
+    }
+
     private fun isNetworkAvailable(): Boolean {
         val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
         val networkInfo = connectivityManager.activeNetworkInfo
@@ -74,21 +92,12 @@ class MainActivity : AppCompatActivity() {
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val loginRequest = LoginRequest(username, password)
-                Log.d(TAG, "Login Request: $loginRequest")
-                
                 val response = RetrofitClient.apiService.login(loginRequest)
-                
-                // Log response details
-                Log.d(TAG, "Login Response Status: ${response.code()}")
-                Log.d(TAG, "Login Response Headers: ${response.headers()}")
-                
-                // Log the raw response body for debugging
                 val responseBody = response.body()
                 val errorBody = response.errorBody()?.string()
-                Log.d(TAG, "Login Response Body: $responseBody")
-                Log.d(TAG, "Login Error Body: $errorBody")
-                
+
                 withContext(Dispatchers.Main) {
+                    hideLoading()
                     if (response.isSuccessful) {
                         if (responseBody != null) {
                             Log.d(TAG, "Login Response Status: ${responseBody.status}")
@@ -145,15 +154,15 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: UnknownHostException) {
                 withContext(Dispatchers.Main) {
+                    hideLoading()
                     Log.e(TAG, "Network error: Cannot connect to server", e)
                     Toast.makeText(this@MainActivity, "Cannot connect to server. Please check your internet connection.", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    Log.e(TAG, "Login Error", e)
-                    Log.e(TAG, "Error message: ${e.message}")
-                    Log.e(TAG, "Error stack trace: ${e.stackTraceToString()}")
-                    Toast.makeText(this@MainActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
+                    hideLoading()
+                    Log.e(TAG, "Unexpected error during login", e)
+                    Toast.makeText(this@MainActivity, "An unexpected error occurred. Please try again.", Toast.LENGTH_LONG).show()
                 }
             }
         }

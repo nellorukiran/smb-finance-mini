@@ -94,6 +94,16 @@ class DashboardActivity : AppCompatActivity() {
     }
 
     private fun performLogout() {
+        // Clear the auth token first
+        RetrofitClient.setAuthToken(null)
+        
+        // Navigate to login screen immediately
+        val intent = Intent(this@DashboardActivity, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
+        finish()
+        
+        // Optionally make the API call in the background
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 Log.d(TAG, "Attempting logout...")
@@ -101,31 +111,13 @@ class DashboardActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     if (response.isSuccessful) {
                         Log.d(TAG, "Logout successful")
-                        // Clear any stored user data or tokens here if needed
-                        val intent = Intent(this@DashboardActivity, MainActivity::class.java)
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
-                        finish()
                     } else {
                         val errorBody = response.errorBody()?.string()
                         Log.e(TAG, "Logout failed with code: ${response.code()}, error: $errorBody")
-                        Toast.makeText(
-                            this@DashboardActivity,
-                            "Logout failed: ${errorBody ?: "Unknown error"}",
-                            Toast.LENGTH_LONG
-                        ).show()
                     }
                 }
             } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    Log.e(TAG, "Error during logout", e)
-                    val errorMessage = when (e) {
-                        is java.net.UnknownHostException -> "No internet connection"
-                        is java.net.SocketTimeoutException -> "Connection timeout"
-                        else -> e.message ?: "Unknown error occurred"
-                    }
-                    Toast.makeText(this@DashboardActivity, "Error: $errorMessage", Toast.LENGTH_LONG).show()
-                }
+                Log.e(TAG, "Error during logout", e)
             }
         }
     }

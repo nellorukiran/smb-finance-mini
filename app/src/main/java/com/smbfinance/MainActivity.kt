@@ -95,20 +95,9 @@ class MainActivity : AppCompatActivity() {
                             Log.d(TAG, "Login Response Message: ${responseBody.message}")
                             
                             if (responseBody.status == "success") {
-                                //val userData = responseBody.data.user
-                               // Log.d(TAG, "User Data: $userData")
-                                
-//                                val user = User(
-//                                    userData.id,
-//                                    userData.username,
-//                                    userData.email,
-//                                    userData.fullName,
-//                                    userData.userType
-//                                )
-                                
                                 // Store the auth token
-                                //RetrofitClient.setAuthToken(responseBody.data.token)
-                               // Log.d(TAG, "Auth token stored: ${responseBody.data.token}")
+                                RetrofitClient.setAuthToken(responseBody.data?.token)
+                                Log.d(TAG, "Auth token stored: ${responseBody.data?.token?.take(10)}...")
                                 
                                 // Clear input fields
                                 usernameInput.text.clear()

@@ -11,9 +11,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textfield.TextInputEditText
-import com.google.android.material.button.MaterialButton
 import com.smbfinance.adapter.TransactionAdapter
 import com.smbfinance.api.RetrofitClient
 import com.smbfinance.model.PaymentHistoryResponse
@@ -26,13 +26,14 @@ class HistoryActivity : AppCompatActivity() {
     private val TAG = "HistoryActivity"
     private lateinit var etCustomerId: TextInputEditText
     private lateinit var btnSearch: MaterialButton
-    private lateinit var cardCustomerDetails: MaterialCardView
+    private lateinit var customerDetailsCard: MaterialCardView
     private lateinit var tvCustomerName: TextView
     private lateinit var tvPhoneNumber: TextView
     private lateinit var tvAddress: TextView
     private lateinit var tvNextDueAmount: TextView
-    private lateinit var tvTransactionHistoryTitle: TextView
-    private lateinit var rvTransactions: RecyclerView
+    private lateinit var rvHistory: RecyclerView
+    private lateinit var progressBar: View
+    private lateinit var tvNoData: TextView
     private lateinit var transactionAdapter: TransactionAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,19 +48,21 @@ class HistoryActivity : AppCompatActivity() {
         // Initialize views
         etCustomerId = findViewById(R.id.etCustomerId)
         btnSearch = findViewById(R.id.btnSearch)
-        cardCustomerDetails = findViewById(R.id.cardCustomerDetails)
+        customerDetailsCard = findViewById(R.id.customerDetailsCard)
         tvCustomerName = findViewById(R.id.tvCustomerName)
         tvPhoneNumber = findViewById(R.id.tvPhoneNumber)
         tvAddress = findViewById(R.id.tvAddress)
         tvNextDueAmount = findViewById(R.id.tvNextDueAmount)
-        tvTransactionHistoryTitle = findViewById(R.id.tvTransactionHistoryTitle)
-        rvTransactions = findViewById(R.id.rvTransactions)
+        rvHistory = findViewById(R.id.rvHistory)
+        progressBar = findViewById(R.id.progressBar)
+        tvNoData = findViewById(R.id.tvNoData)
 
         // Setup RecyclerView
-        rvTransactions.layoutManager = LinearLayoutManager(this)
+        rvHistory.layoutManager = LinearLayoutManager(this)
         transactionAdapter = TransactionAdapter(emptyList())
-        rvTransactions.adapter = transactionAdapter
+        rvHistory.adapter = transactionAdapter
 
+        // Setup search button
         btnSearch.setOnClickListener {
             val customerId = etCustomerId.text.toString().trim()
             if (customerId.isEmpty()) {
@@ -76,10 +79,6 @@ class HistoryActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_logout -> {
-                performLogout()
-                true
-            }
             android.R.id.home -> {
                 val intent = Intent(this, DashboardActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
@@ -91,50 +90,30 @@ class HistoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun performLogout() {
-        // Clear the auth token first
-        RetrofitClient.setAuthToken(null)
-        
-        // Navigate to login screen immediately
-        val intent = Intent(this@HistoryActivity, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        startActivity(intent)
-        finish()
-        
-        // Optionally make the API call in the background
-        CoroutineScope(Dispatchers.IO).launch {
-            try {
-                Log.d(TAG, "Attempting logout...")
-                val response = RetrofitClient.apiService.logout()
-                withContext(Dispatchers.Main) {
-                    if (response.isSuccessful) {
-                        Log.d(TAG, "Logout successful")
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        Log.e(TAG, "Logout failed with code: ${response.code()}, error: $errorBody")
-                    }
-                }
-            } catch (e: Exception) {
-                Log.e(TAG, "Error during logout", e)
-            }
-        }
-    }
-
     private fun searchPaymentHistory(customerId: String) {
+        progressBar.visibility = View.VISIBLE
+        tvNoData.visibility = View.GONE
+        rvHistory.visibility = View.GONE
+        customerDetailsCard.visibility = View.GONE
+
         CoroutineScope(Dispatchers.IO).launch {
             try {
                 val response = RetrofitClient.apiService.getPaymentHistory(customerId)
                 Log.e(TAG, "response: ${response}")
                 withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
                     if (response.isSuccessful && response.body() != null) {
                         val paymentHistory = response.body()!!
                         displayPaymentHistory(paymentHistory)
                     } else {
+                        tvNoData.visibility = View.VISIBLE
                         Toast.makeText(this@HistoryActivity, "Failed to fetch payment history", Toast.LENGTH_SHORT).show()
                     }
                 }
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
+                    progressBar.visibility = View.GONE
+                    tvNoData.visibility = View.VISIBLE
                     Toast.makeText(this@HistoryActivity, "Error: ${e.message}", Toast.LENGTH_SHORT).show()
                 }
             }
@@ -144,16 +123,22 @@ class HistoryActivity : AppCompatActivity() {
     private fun displayPaymentHistory(paymentHistory: PaymentHistoryResponse) {
         // Display customer details
         val customerDetails = paymentHistory.customerDetails
-        tvCustomerName.text = customerDetails.customerName
-        tvPhoneNumber.text = "Phone: ${customerDetails.phoneNumber}"
-        tvAddress.text = "Address: ${customerDetails.address}"
-        tvNextDueAmount.text = "Bal Due Amount: ₹${customerDetails.totalDueAmount}"
-        cardCustomerDetails.visibility = View.VISIBLE
+        if (customerDetails != null) {
+            tvCustomerName.text = "Name: ${customerDetails.customerName}"
+            tvPhoneNumber.text = "Phone: ${customerDetails.phoneNumber}"
+            tvAddress.text = "Address: ${customerDetails.address}"
+            tvNextDueAmount.text = "Balance Due Amount: ₹${customerDetails.totalDueAmount}"
+            customerDetailsCard.visibility = View.VISIBLE
+        }
 
         // Display transactions
-        transactionAdapter = TransactionAdapter(paymentHistory.transactions)
-        rvTransactions.adapter = transactionAdapter
-        tvTransactionHistoryTitle.visibility = View.VISIBLE
-        rvTransactions.visibility = View.VISIBLE
+        if (paymentHistory.transactions.isNotEmpty()) {
+            transactionAdapter = TransactionAdapter(paymentHistory.transactions)
+            rvHistory.adapter = transactionAdapter
+            rvHistory.visibility = View.VISIBLE
+        } else {
+            tvNoData.visibility = View.VISIBLE
+            tvNoData.text = "No transactions found"
+        }
     }
 } 

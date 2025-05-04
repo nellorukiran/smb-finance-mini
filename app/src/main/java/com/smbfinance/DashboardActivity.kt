@@ -172,6 +172,11 @@ class DashboardActivity : AppCompatActivity() {
                 "Collections",
                 "Manage customer collections, track payments, and handle collection activities",
                 R.drawable.icon_account_circle
+            ),
+            DashboardItem(
+                "Files",
+                "Manage and organize customer files, documents, and related paperwork",
+                R.drawable.icon_account_circle
             )
         )
 
@@ -182,6 +187,7 @@ class DashboardActivity : AppCompatActivity() {
                 "History" -> startActivity(Intent(this, HistoryActivity::class.java))
                 "View" -> startActivity(Intent(this, CustomerSearchActivity::class.java))
                 "Collections" -> startActivity(Intent(this, CollectionsActivity::class.java))
+                "Files" -> startActivity(Intent(this, FilesActivity::class.java))
             }
         }
 

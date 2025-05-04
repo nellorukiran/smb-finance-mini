@@ -13,6 +13,7 @@ import com.smbfinance.model.CustomerDetailsResponse
 import com.smbfinance.model.TransactionDetailsResponse
 import com.smbfinance.model.DeleteSearchResponse
 import com.smbfinance.model.CollectionResponse
+import com.smbfinance.model.FilesResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -64,4 +65,10 @@ interface ApiService {
         @Query("startDate") startDate: String,
         @Query("endDate") endDate: String
     ): Response<CollectionResponse>
+
+    @GET("api/external/monthly-files")
+    suspend fun getFiles(
+        @Query("startDate") startDate: String,
+        @Query("endDate") endDate: String
+    ): Response<FilesResponse>
 } 

@@ -21,6 +21,14 @@
             android:id="@+id/nav_view"
             android:icon="@drawable/icon_account_circle"
             android:title="View" />
+        <item
+            android:id="@+id/nav_files"
+            android:icon="@drawable/icon_account_circle"
+            android:title="New Files" />
+        <item
+            android:id="@+id/nav_collections"
+            android:icon="@drawable/icon_account_circle"
+            android:title="Colections" />
     </group>
 
     <item android:title="Settings">

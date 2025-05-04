@@ -30,7 +30,8 @@ class ViewCustomersActivity : AppCompatActivity() {
         // Setup toolbar
         setSupportActionBar(toolbar)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        supportActionBar?.title = "View Customers"
+        supportActionBar?.setDisplayShowTitleEnabled(false)
+        supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home)
 
         // Setup RecyclerView
         recyclerView.layoutManager = LinearLayoutManager(this)

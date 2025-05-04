@@ -101,6 +101,12 @@ class DashboardActivity : AppCompatActivity() {
                 R.id.nav_view -> {
                     startActivity(Intent(this, CustomerSearchActivity::class.java))
                 }
+                R.id.nav_files -> {
+                    startActivity(Intent(this, FilesActivity::class.java))
+                }
+                R.id.nav_collections -> {
+                    startActivity(Intent(this, CollectionsActivity::class.java))
+                }
                 R.id.nav_settings -> {
                     // TODO: Implement settings activity
                 }

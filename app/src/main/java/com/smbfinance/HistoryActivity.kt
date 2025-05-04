@@ -44,6 +44,7 @@ class HistoryActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         supportActionBar?.setHomeAsUpIndicator(R.drawable.ic_home)
+        supportActionBar?.title = null
 
         // Initialize views
         etCustomerId = findViewById(R.id.etCustomerId)

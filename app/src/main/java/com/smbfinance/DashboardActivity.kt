@@ -167,6 +167,11 @@ class DashboardActivity : AppCompatActivity() {
                 "View",
                 "View customer accounts, manage customer transactions, and view transaction details",
                 R.drawable.icon_account_circle
+            ),
+            DashboardItem(
+                "Collections",
+                "Manage customer collections, track payments, and handle collection activities",
+                R.drawable.icon_account_circle
             )
         )
 
@@ -176,6 +181,7 @@ class DashboardActivity : AppCompatActivity() {
                 "Update" -> startActivity(Intent(this, UpdateCustomerActivity::class.java))
                 "History" -> startActivity(Intent(this, HistoryActivity::class.java))
                 "View" -> startActivity(Intent(this, CustomerSearchActivity::class.java))
+                "Collections" -> startActivity(Intent(this, CollectionsActivity::class.java))
             }
         }
 

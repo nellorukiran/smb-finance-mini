@@ -34,6 +34,7 @@
         <activity android:name=".CustomerSearchActivity" />
         <activity android:name=".CustomerDetailsActivity" />
         <activity android:name=".DeleteCustomerActivity" />
+        <activity android:name=".CollectionsActivity" />
     </application>
 
 </manifest>

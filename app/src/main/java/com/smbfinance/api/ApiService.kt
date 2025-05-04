@@ -12,6 +12,7 @@ import com.smbfinance.model.Customer
 import com.smbfinance.model.CustomerDetailsResponse
 import com.smbfinance.model.TransactionDetailsResponse
 import com.smbfinance.model.DeleteSearchResponse
+import com.smbfinance.model.CollectionResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -57,4 +58,10 @@ interface ApiService {
 
     @POST("api/customer/delete")
     suspend fun deleteCustomer(@Query("customerId") customerId: String): Response<LoginResponse>
+
+    @GET("api/external/monthly-collection")
+    suspend fun getCollections(
+        @Query("startDate") startDate: String,
+        @Query("endDate") endDate: String
+    ): Response<CollectionResponse>
 } 
